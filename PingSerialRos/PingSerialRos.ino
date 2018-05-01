@@ -1,7 +1,7 @@
 #include <Ping.h>
 
 #include <ros.h>
-#include <std_msgs/Float32.h>
+#include <std_msgs/Float32.h> // Usar sensor_msgs/Range
 
 const int PIN = A1;
 
@@ -21,7 +21,6 @@ void setup()
 void loop()
 {
   // Envia informacion en metros
-  // Agregar timestamp
   ping_msg.data = ping.measureCM() / 100.0;
   ping_pub.publish( &ping_msg );
   nh.spinOnce();

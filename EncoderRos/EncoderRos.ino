@@ -1,5 +1,5 @@
 #include <ros.h>
-#include <std_msgs/UInt16.h>
+#include <std_msgs/UInt16.h> // Usar sensor_msgs/JointState
 
 const int PIN = A2;
 
