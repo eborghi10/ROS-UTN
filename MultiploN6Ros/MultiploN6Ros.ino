@@ -17,20 +17,43 @@
 
 ros::NodeHandle  nh;
 
-std_msgs::UInt16 encoder_left_msg;
-std_msgs::UInt16 encoder_right_msg;
+std_msgs::Float32 encoder_left_msg;
+std_msgs::Float32 encoder_right_msg;
 std_msgs::Float32 ping_msg;
 
 DCMotor dcMotorLeft(EN_left, D0_left, D1_left);
 DCMotor dcMotorRight(EN_right, D0_right, D1_right);
 
+/**
+ * Odometria
+ */
+
+int8_t left_motor_dir = 0;
+int8_t right_motor_dir = 0;
+
+uint16_t current_left_motor_angle = 0;
+uint16_t current_right_motor_angle = 0;
+uint16_t last_left_motor_angle = 0;
+uint16_t last_right_motor_angle = 0;
+
+const double DEG_PER_REV = 22.5;
+
+ros::Time last_time;
+ros::Time current_time;
+
 void dcmotor_left_cb(const std_msgs::UInt16& cmd_msg){
     //set servo angle, should be from 0-180 
+    if(cmd_msg.data > 0) left_motor_dir = 1;
+    else if(cmd_msg.data < 0) left_motor_dir = 1;
+    else left_motor_dir = 0;
     dcMotorLeft.setSpeed(cmd_msg.data);
 }
 
 void dcmotor_right_cb(const std_msgs::UInt16& cmd_msg){
     //set servo angle, should be from 0-180 
+    if(cmd_msg.data > 0) right_motor_dir = 1;
+    else if(cmd_msg.data < 0) right_motor_dir = 1;
+    else right_motor_dir = 0;
     dcMotorRight.setSpeed(cmd_msg.data);
 }
 
@@ -61,34 +84,56 @@ void setup(){
   nh.advertise(ping_pub);
   oldState[LEFT] = digitalRead(encoder_left);
   oldState[RIGHT] = digitalRead(encoder_right);
+  last_time = nh.now();
+}
+
+uint16_t wrap_angle(uint16_t angle){
+  if(angle >= 360) angle = 0;
+  else if(angle < 0) angle = 359;
+  return angle;
+}
+
+uint16_t deg_to_rad(uint16_t deg_){
+  return deg_ * M_PI / 180.0;
 }
 
 void encodersLogic(){
   // Envia cada flanco creciente
   newState[LEFT] = digitalRead(encoder_left);
   newState[RIGHT] = digitalRead(encoder_right);
+
+  current_time = nh.now();
   
   if(oldState[LEFT] != newState[LEFT])
   {
     if(newState[LEFT])
     {
-      // Agregar timestamp
-      encoder_left_msg.data = newState[LEFT];
+      if(left_motor_dir > 0) current_left_motor_angle += DEG_PER_REV;
+      else if(left_motor_dir < 0) current_left_motor_angle -= DEG_PER_REV;
+      current_left_motor_angle = wrap_angle(current_left_motor_angle);
+      uint16_t angle = deg_to_rad(current_left_motor_angle - last_left_motor_angle);
+      encoder_left_msg.data = angle / (current_time.toSec() - last_time.toSec());
       encoder_left_pub.publish( &encoder_left_msg );
     }
     oldState[LEFT] = newState[LEFT];
+    last_left_motor_angle = current_left_motor_angle;
   }
 
   if(oldState[RIGHT] != newState[RIGHT])
   {
     if(newState[RIGHT])
     {
-      // Agregar timestamp
-      encoder_right_msg.data = newState[RIGHT];
+      if(right_motor_dir > 0) current_right_motor_angle += DEG_PER_REV;
+      else if(right_motor_dir < 0) current_right_motor_angle -= DEG_PER_REV;
+      current_right_motor_angle = wrap_angle(current_right_motor_angle);
+      uint16_t angle = deg_to_rad(current_right_motor_angle - last_right_motor_angle);
+      encoder_right_msg.data = angle / (current_time.toSec() - last_time.toSec());
       encoder_right_pub.publish( &encoder_right_msg );
     }
     oldState[RIGHT] = newState[RIGHT];
+    last_right_motor_angle = current_right_motor_angle;
   }
+  last_time = current_time;
 }
 
 void pingLogic(){
