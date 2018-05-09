@@ -13,6 +13,7 @@
 #include <DCMotor.h>
 #include <Ping.h>
 
+#include "angle.hpp"
 #include "pinout.h"
 
 ros::NodeHandle  nh;
@@ -30,15 +31,13 @@ DCMotor dcMotorRight(EN_right, D0_right, D1_right);
 
 enum Dir{BW=-1, QUIET=0, FW=1};
 
-int8_t left_motor_dir = Dir.QUIET;
-int8_t right_motor_dir = Dir.QUIET;
+Dir left_motor_dir = Dir::QUIET;
+Dir right_motor_dir = Dir::QUIET;
 
-double current_left_motor_angle = 0;
-double current_right_motor_angle = 0;
-double last_left_motor_angle = 0;
-double last_right_motor_angle = 0;
-
-const double DEG_PER_REV = 22.5;
+Angle current_left_motor_angle(0);
+Angle current_right_motor_angle(0);
+Angle last_left_motor_angle(0);
+Angle last_right_motor_angle(0);
 
 ros::Time last_time_left;
 ros::Time last_time_right;
@@ -46,17 +45,17 @@ ros::Time current_time;
 
 void dcmotor_left_cb(const std_msgs::UInt16& cmd_msg){
     //set servo angle, should be from 0-180
-    if(cmd_msg.data > 0) left_motor_dir = Dir.FW;
-    else if(cmd_msg.data < 0) left_motor_dir = Dir.BW;
-    else left_motor_dir = Dir.QUIET;
+    if(cmd_msg.data > 1e-2) left_motor_dir = Dir::FW;
+    else if(cmd_msg.data < 1e-2) left_motor_dir = Dir::BW;
+    else left_motor_dir = Dir::QUIET;
     dcMotorLeft.setSpeed(cmd_msg.data);
 }
 
 void dcmotor_right_cb(const std_msgs::UInt16& cmd_msg){
     //set servo angle, should be from 0-180
-    if(cmd_msg.data > 0) right_motor_dir = Dir.FW;
-    else if(cmd_msg.data < 0) right_motor_dir = Dir.BW;
-    else right_motor_dir = Dir.QUIET;
+    if(cmd_msg.data > 1e-2) right_motor_dir = Dir::FW;
+    else if(cmd_msg.data < 1e-2) right_motor_dir = Dir::BW;
+    else right_motor_dir = Dir::QUIET;
     dcMotorRight.setSpeed(cmd_msg.data);
 }
 
@@ -87,29 +86,24 @@ void setup(){
   nh.advertise(ping_pub);
   oldState[LEFT] = digitalRead(encoder_left);
   oldState[RIGHT] = digitalRead(encoder_right);
-  last_time = nh.now();
+  last_time_left = nh.now();
+  last_time_right = last_time_left;
 }
 
-const double UPPER_ANGLE = 360.0;
-const double LOWER_ANGLE = 0.0;
+const Angle DEG_PER_REV(22.5);
 
-double wrap_angle(double angle, double upper_limit, double lower_limit){
-  return a - b * floor(a / b);
+Angle count_angle(Angle angle, int8_t dir){
+  if(dir == Dir::FW) angle += DEG_PER_REV;
+  else if(dir == Dir::BW) angle -= DEG_PER_REV;
+  else angle = 0; // Dir::QUIET
+  angle.NormalizeAngle();
+  return angle;
 }
 
-uint16_t deg_to_rad(uint16_t deg_){
-  return deg_ * M_PI / 180.0;
-}
-
-double count_angle(uint16_t angle, int8_t dir){
-  if(dir == Dir.FW) angle += DEG_PER_REV;
-  else if(dir == Dir.BW) angle -= DEG_PER_REV;
-  return wrap_angle(angle);
-}
-
-double get_velocity(double angle_t1, double angle_t0, double t1, double t0){
-  dAngle = deg_to_rad(angle_t1 - angle_t0);
-  return dAngle / (t1 - t0);
+double get_velocity(Angle angle_t1, Angle angle_t0, double t1, double t0){
+  Angle dAngle(angle_t1 - angle_t0);
+  double dT = (t1 - t0);
+  return dAngle.GetAngle() / dT;
 }
 
 /**
