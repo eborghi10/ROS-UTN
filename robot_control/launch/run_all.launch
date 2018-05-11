@@ -3,8 +3,10 @@
     <arg name="port" default="/dev/ttyACM0" />
     <arg name="baud" default="57600" />
 
-    <!-- Run rosserial node (UPLOAD THE PROGRAM TO YOUR ARDUINO-BASED ROBOT FIRST!) -->
-    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" args="_port:=$(arg port) baud:=$(arg baud)"/>
+    <include filename="$(find robot_control)/launch/arduino_robot.launch">
+        <arg name="port" value="$(arg port)">
+        <arg name="baud" value="$(arg baud)">
+    </include>
 
     <!-- Execute controller node -->
     <node pkg="robot_control" type="robot.py" name="robot_control_node" source="screen" />

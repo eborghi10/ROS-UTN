@@ -41,9 +41,9 @@ double read2angle(uint16_t register_output)
 
 void ReadAngles() 
 {
-  double angle_left = read2angle( encoder_left.getRawRotation() );
+  double angle_left = read2angle( encoder_left.getRotationInRadians() );
   current_left_motor_angle.SetAngle( angle_left );
-  double angle_right = read2angle( encoder_right.getRawRotation() );
+  double angle_right = read2angle( encoder_right.getRotationInRadians() );
   current_right_motor_angle.SetAngle( angle_right );
 
   current_left_motor_angle -= initial_left_motor_angle;
