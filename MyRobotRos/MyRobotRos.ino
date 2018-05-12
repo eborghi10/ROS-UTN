@@ -18,8 +18,8 @@ void setup(){
   nh.advertise(encoder_right_pub);
   nh.advertise(odom_pub);
 
-  initial_left_motor_angle = read2angle( encoder_left.getRotationInRadians() );
-  initial_right_motor_angle = read2angle( encoder_right.getRotationInRadians() );
+  initial_left_motor_angle = read2angle( encoder_left.getRawRotation() );
+  initial_right_motor_angle = read2angle( encoder_right.getRawRotation() );
   
   last_time = nh.now();
 

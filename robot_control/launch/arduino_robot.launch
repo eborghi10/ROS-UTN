@@ -2,10 +2,18 @@
     <arg name="port" default="/dev/ttyACM0" />
     <arg name="baud" default="57600" />
 
+    <arg name="rviz" default="false"/>
+    <arg name="rvizconfig" default="$(find robot_control)/rviz/config.rviz" />
+
     <!-- Run rosserial node (UPLOAD THE PROGRAM TO YOUR ARDUINO-BASED ROBOT FIRST!) -->
     <node pkg="rosserial_python" type="serial_node.py" name="serial_node" args="_port:=$(arg port) baud:=$(arg baud)"/>
 
     <!-- Remaps /rosabridge/odom to /odom as nav_msgs/odom -->
     <include file="$(find rosabridge_server)/launch/odom_proxy_node.launch" />
+
+    <!-- Show in Rviz -->
+    <group if="$(arg rviz)">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="false"/>
+    </group>
 
 </launch>

@@ -41,9 +41,9 @@ double read2angle(uint16_t register_output)
 
 void ReadAngles() 
 {
-  double angle_left = read2angle( encoder_left.getRotationInRadians() );
+  double angle_left = read2angle( encoder_left.getRawRotation() );
   current_left_motor_angle.SetAngle( angle_left );
-  double angle_right = read2angle( encoder_right.getRotationInRadians() );
+  double angle_right = read2angle( encoder_right.getRawRotation() );
   current_right_motor_angle.SetAngle( angle_right );
 
   current_left_motor_angle -= initial_left_motor_angle;
@@ -68,14 +68,14 @@ void encodersLogic(){
   wl = get_velocity(
       current_left_motor_angle, last_left_motor_angle,
       current_time, last_time);
-//  encoder_left_msg.data = wl;
-//  encoder_left_pub.publish( &encoder_left_msg );
+  encoder_left_msg.data = wl;
+  encoder_left_pub.publish( &encoder_left_msg );
 
   wr = (-1) * get_velocity(
         current_right_motor_angle, last_right_motor_angle,
         current_time, last_time);
-//  encoder_right_msg.data = wr;
-//  encoder_right_pub.publish( &encoder_right_msg );
+  encoder_right_msg.data = wr;
+  encoder_right_pub.publish( &encoder_right_msg );
 
   last_right_motor_angle = current_right_motor_angle;
   last_left_motor_angle = current_left_motor_angle;
