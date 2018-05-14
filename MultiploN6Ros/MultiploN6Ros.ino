@@ -100,9 +100,9 @@ Angle count_angle(Angle angle, int8_t dir){
   return angle;
 }
 
-double get_velocity(Angle angle_t1, Angle angle_t0, double t1, double t0){
+double get_velocity(Angle angle_t1, Angle angle_t0, ros::Time t1, ros::Time t0){
   Angle dAngle(angle_t1 - angle_t0);
-  double dT = (t1 - t0);
+  double dT = (t1.toSec() - t0.toSec()) + (t1.toNsec() - t0.toNsec())/1E9;
   return dAngle.GetAngle() / dT;
 }
 
@@ -122,7 +122,7 @@ void encodersLogic(){
       current_left_motor_angle = count_angle(current_left_motor_angle, left_motor_dir);
       encoder_left_msg.data = get_velocity(
           current_left_motor_angle, last_left_motor_angle,
-          current_time.toSec(), last_time_left.toSec());
+          current_time, last_time_left);
       encoder_left_pub.publish( &encoder_left_msg );
 
       last_left_motor_angle = current_left_motor_angle;

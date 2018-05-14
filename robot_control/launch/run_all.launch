@@ -4,8 +4,8 @@
     <arg name="baud" default="57600" />
 
     <include filename="$(find robot_control)/launch/arduino_robot.launch">
-        <arg name="port" value="$(arg port)">
-        <arg name="baud" value="$(arg baud)">
+        <arg name="port" value="$(arg port)"/>
+        <arg name="baud" value="$(arg baud)"/>
     </include>
 
     <!-- Execute controller node -->

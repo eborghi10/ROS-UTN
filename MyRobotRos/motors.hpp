@@ -16,7 +16,7 @@ void dcmotor_left_cb(const std_msgs::UInt16& cmd_msg){
 
 void dcmotor_right_cb(const std_msgs::UInt16& cmd_msg){
     //set servo angle, should be from 0-180
-    dcMotorRight.setSpeed(cmd_msg.data);
+    dcMotorRight.setSpeed(-cmd_msg.data);
 }
 
 ros::Subscriber<std_msgs::UInt16> subMotorLeft("output/left", dcmotor_left_cb);

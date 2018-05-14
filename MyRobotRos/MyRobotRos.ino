@@ -8,8 +8,8 @@ uint16_t period(50);
 void setup(){
   pinMode(encoder_left_pin, INPUT);
   pinMode(encoder_right_pin, INPUT);
-  encoder_left.begin();
-  encoder_right.begin();
+  encoder_left.init();
+  encoder_right.init();
   
   nh.initNode();
   nh.subscribe(subMotorLeft);
