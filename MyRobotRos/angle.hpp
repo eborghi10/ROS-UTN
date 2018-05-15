@@ -4,7 +4,6 @@ class Angle {
 public:
     Angle(double angle);
     inline double GetAngle();
-    inline void SetAngle(double angle);
     inline double ToRadians();
     inline double ToDegrees();
     inline void NormalizeAngle();
@@ -12,6 +11,7 @@ public:
     void operator-=(Angle angle);
     Angle operator+(Angle angle);
     void operator+=(Angle angle);
+    void operator=(double angle);
 private:
     inline void NormalizeAnglePositive();
     double angle;
@@ -25,11 +25,6 @@ Angle::Angle(double angle)
 inline double Angle::GetAngle() 
 {
     return this->angle;
-}
-
-inline void Angle::SetAngle(double angle)
-{
-    this->angle = angle;
 }
 
 inline double Angle::ToRadians()
@@ -72,3 +67,9 @@ void Angle::operator+=(Angle angle)
 {
     this->angle += angle.GetAngle();
 }
+
+void Angle::operator=(double angle)
+{
+  this->angle = angle;
+}
+

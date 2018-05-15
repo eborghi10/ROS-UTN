@@ -6,10 +6,10 @@ uint32_t lastTime;
 uint16_t period(50);
 
 void setup(){
-  pinMode(encoder_left_pin, INPUT);
-  pinMode(encoder_right_pin, INPUT);
-  encoder_left.init();
-  encoder_right.init();
+  encoder_left.begin();
+  encoder_right.begin();
+  // Right motor turns to the other side
+  dcMotorRight.setClockwise(false);
   
   nh.initNode();
   nh.subscribe(subMotorLeft);
@@ -18,8 +18,8 @@ void setup(){
   nh.advertise(encoder_right_pub);
   nh.advertise(odom_pub);
 
-  initial_left_motor_angle = read2angle( encoder_left.getRawRotation() );
-  initial_right_motor_angle = read2angle( encoder_right.getRawRotation() );
+  initial_left_motor_angle = encoder_left.getRotationInRadians();
+  initial_right_motor_angle = encoder_right.getRotationInRadians();
   
   last_time = nh.now();
 

@@ -30,21 +30,10 @@ ros::Publisher encoder_right_pub("encoder/right", &encoder_right_msg);
 double wl;
 double wr;
 
-double read2angle(uint16_t register_output) 
-{
-  double angle = register_output * (static_cast<double>(TWO_PI / 16383.0));
-
-  // |angle| < DEVICE_RESOLUTION
-  if(abs(angle) < 0.0001745329) return 0.0;
-  return angle;
-}
-
 void ReadAngles() 
 {
-  double angle_left = read2angle( encoder_left.getRawRotation() );
-  current_left_motor_angle.SetAngle( angle_left );
-  double angle_right = read2angle( encoder_right.getRawRotation() );
-  current_right_motor_angle.SetAngle( angle_right );
+  current_left_motor_angle = encoder_left.getRotationInRadians();
+  current_right_motor_angle = encoder_right.getRotationInRadians();
 
   current_left_motor_angle -= initial_left_motor_angle;
   current_right_motor_angle -= initial_right_motor_angle;
