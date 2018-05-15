@@ -5,9 +5,9 @@
 
 ros::NodeHandle  nh;
 
-const int EN = 2;
-const int D0 = 4;
-const int D1 = 5;
+const int EN = A15;
+const int D0 = A13;
+const int D1 = A12;
 
 DCMotor dcMotor(EN, D0, D1);
 
