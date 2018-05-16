@@ -44,8 +44,11 @@ void ReadAngles()
 
 double get_velocity(Angle angle_t1, Angle angle_t0, ros::Time t1, ros::Time t0){
   Angle dAngle(angle_t1 - angle_t0);
-  dT = (t1.toSec() - t0.toSec()) + (t1.toNsec() - t0.toNsec())/1E9;
-  return dAngle.GetAngle() / dT;
+  if(dAngle.GetAngle() < 2*0.005) dAngle = 0.0;
+  dT = abs(t1.toSec() - t0.toSec()) + (t1.toNsec() - t0.toNsec())/1E9;
+//  return dAngle.GetAngle() / dT;
+//  return dAngle.GetAngle();
+  return dT;
 }
 
 
@@ -54,13 +57,13 @@ void encodersLogic(){
 
   current_time = nh.now();
 
-  wl = get_velocity(
+  wl = (-1) * get_velocity(
       current_left_motor_angle, last_left_motor_angle,
       current_time, last_time);
   encoder_left_msg.data = wl;
   encoder_left_pub.publish( &encoder_left_msg );
 
-  wr = (-1) * get_velocity(
+  wr = get_velocity(
         current_right_motor_angle, last_right_motor_angle,
         current_time, last_time);
   encoder_right_msg.data = wr;

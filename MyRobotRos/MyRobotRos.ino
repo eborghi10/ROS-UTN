@@ -3,7 +3,7 @@
 #include "odometry.hpp"
 
 uint32_t lastTime;
-uint16_t period(50);
+uint16_t rate(50);
 
 void setup(){
   encoder_left.begin();
@@ -27,13 +27,12 @@ void setup(){
 }
 
 void loop(){
-  const uint32_t currentTime = millis();
-  if((currentTime - lastTime) >= period)
+  const uint32_t currentTime = micros();
+  if((currentTime - lastTime) >= 1E-6/rate)
   {
     lastTime = currentTime;
     encodersLogic();
     odometry();
   }
   nh.spinOnce();
-  delay(1);
 }
