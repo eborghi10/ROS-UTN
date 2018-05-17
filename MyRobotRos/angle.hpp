@@ -4,16 +4,17 @@ class Angle {
 public:
     Angle(double angle);
     inline double GetAngle();
-    inline double ToRadians();
     inline double ToDegrees();
     inline void NormalizeAngle();
+    inline void NormalizeAnglePositive();
     Angle operator-(Angle angle);
     void operator-=(Angle angle);
     Angle operator+(Angle angle);
     void operator+=(Angle angle);
     void operator=(double angle);
+    bool operator<(double arg);
+    bool operator>(double arg);
 private:
-    inline void NormalizeAnglePositive();
     double angle;
 };
 
@@ -25,11 +26,6 @@ Angle::Angle(double angle)
 inline double Angle::GetAngle() 
 {
     return this->angle;
-}
-
-inline double Angle::ToRadians()
-{
-    return this->angle * PI / 180.0;
 }
 
 inline double Angle::ToDegrees()
@@ -71,5 +67,15 @@ void Angle::operator+=(Angle angle)
 void Angle::operator=(double angle)
 {
   this->angle = angle;
+}
+
+bool Angle::operator<(double arg)
+{
+    return this->angle < arg;
+}
+
+bool Angle::operator>(double arg)
+{
+    return this->angle > arg;
 }
 

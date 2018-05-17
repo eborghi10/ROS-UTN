@@ -17,8 +17,6 @@ std_msgs::Float32 encoder_right_msg;
 AS5048A encoder_left(encoder_left_pin);
 AS5048A encoder_right(encoder_right_pin);
 
-Angle initial_left_motor_angle(0);
-Angle initial_right_motor_angle(0);
 Angle current_left_motor_angle(0);
 Angle current_right_motor_angle(0);
 Angle last_left_motor_angle(0);
@@ -30,32 +28,22 @@ ros::Publisher encoder_right_pub("encoder/right", &encoder_right_msg);
 double wl;
 double wr;
 
-void ReadAngles() 
-{
-  current_left_motor_angle = encoder_left.getRotationInRadians();
-  current_right_motor_angle = encoder_right.getRotationInRadians();
-
-  current_left_motor_angle -= initial_left_motor_angle;
-  current_right_motor_angle -= initial_right_motor_angle;
-
-  current_left_motor_angle.NormalizeAngle();
-  current_right_motor_angle.NormalizeAngle();
-}
-
 double get_velocity(Angle angle_t1, Angle angle_t0, ros::Time t1, ros::Time t0){
+  // Angle variation
   Angle dAngle(angle_t1 - angle_t0);
-  if(dAngle.GetAngle() < 2*0.005) dAngle = 0.0;
+  dAngle.NormalizeAnglePositive();
+  if(dAngle < 2*0.005) dAngle = 0.0;
+  // Timestamp
   dT = abs(t1.toSec() - t0.toSec()) + (t1.toNsec() - t0.toNsec())/1E9;
-//  return dAngle.GetAngle() / dT;
+ return dAngle.GetAngle() / dT;
 //  return dAngle.GetAngle();
-  return dT;
+  // return dT;
 }
 
 
 void encodersLogic(){
-  ReadAngles();
-
-  current_time = nh.now();
+  current_left_motor_angle = encoder_left.getRotationInRadians();
+  current_right_motor_angle = encoder_right.getRotationInRadians();
 
   wl = (-1) * get_velocity(
       current_left_motor_angle, last_left_motor_angle,
@@ -71,6 +59,5 @@ void encodersLogic(){
 
   last_right_motor_angle = current_right_motor_angle;
   last_left_motor_angle = current_left_motor_angle;
-  last_time = current_time;
 }
 
