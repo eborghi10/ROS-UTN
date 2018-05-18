@@ -31,12 +31,11 @@ double wr;
 double get_velocity(Angle angle_t1, Angle angle_t0, ros::Time t1, ros::Time t0){
   // Angle variation
   Angle dAngle(angle_t1 - angle_t0);
-  dAngle.NormalizeAnglePositive();
-  if(dAngle < 2*0.005) dAngle = 0.0;
+  if(abs(dAngle.GetAngle()) <= 0.002) dAngle = 0.0;
   // Timestamp
-  dT = abs(t1.toSec() - t0.toSec()) + (t1.toNsec() - t0.toNsec())/1E9;
- return dAngle.GetAngle() / dT;
-//  return dAngle.GetAngle();
+  dT = abs(t1.toNsec() - t0.toNsec())/1E9;
+//  return dAngle.GetAngle() / dT;
+ return dAngle.GetAngle();
   // return dT;
 }
 
