@@ -28,7 +28,7 @@ void loop(){
   if((current_time.toNsec() - last_time.toNsec())/1E9 >= 1.0/rate)
   {
     encodersLogic();
-    // odometry();
+    odometry();
     last_time = current_time;
   }
   nh.spinOnce();
