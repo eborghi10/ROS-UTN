@@ -29,16 +29,12 @@ double wl;
 double wr;
 
 double get_velocity(Angle angle_t1, Angle angle_t0, ros::Time t1, ros::Time t0){
-  // Angle variation
-  Angle dAngle(angle_t1 - angle_t0);
-  if(abs(dAngle.GetAngle()) <= 0.002) dAngle = 0.0;
+  // Angle unwrapping
+  double dAngle = Angle::Unwrap_PI(angle_t0, angle_t1);
   // Timestamp
   dT = abs(t1.toNsec() - t0.toNsec())/1E9;
-//  return dAngle.GetAngle() / dT;
- return dAngle.GetAngle();
-  // return dT;
+ return dAngle / dT;
 }
-
 
 void encodersLogic(){
   current_left_motor_angle = encoder_left.getRotationInRadians();

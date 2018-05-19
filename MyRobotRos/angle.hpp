@@ -14,6 +14,9 @@ public:
     void operator=(double angle);
     bool operator<(double arg);
     bool operator>(double arg);
+
+    static inline double Unwrap(double limit, Angle previousAngle, Angle newAngle);
+    static inline double Unwrap_PI(Angle previousAngle, Angle newAngle);
 private:
     double angle;
 };
@@ -79,3 +82,22 @@ bool Angle::operator>(double arg)
     return this->angle > arg;
 }
 
+/**
+ * Unwraps the difference between the angles over a discontinous domain.
+ * 
+ * @param limit: When the difference between the angles exceeds the "limit" 
+ *               means that there is a jump over a discontinuity
+ */
+static inline double Angle::Unwrap(double limit, Angle previousAngle, Angle newAngle)
+{
+    // Angle difference
+    double d = newAngle.GetAngle() - previousAngle.GetAngle();
+    // |d| > l : Angle jump -> Invert d
+    // * Invert does not mean to do: d=-d but d+-TWO_PI
+    return d > limit ? d - TWO_PI : (d < -limit ? d + TWO_PI : d);
+}
+
+static inline double Angle::Unwrap_PI(Angle previousAngle, Angle newAngle)
+{
+    return Angle::Unwrap(PI, previousAngle, newAngle);
+}
