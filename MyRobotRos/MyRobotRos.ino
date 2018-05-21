@@ -2,8 +2,6 @@
 #include "encoder.hpp"
 #include "odometry.hpp"
 
-double rate(100.0); // Hz
-
 void setup(){
   encoder_left.begin();
   encoder_right.begin();

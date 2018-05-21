@@ -9,7 +9,7 @@
 ros::Time last_time;
 ros::Time current_time;
 
-double dT;
+double dT(1.0 / rate);
 
 std_msgs::Float32 encoder_left_msg;
 std_msgs::Float32 encoder_right_msg;
@@ -31,9 +31,7 @@ double wr;
 double get_velocity(Angle angle_t1, Angle angle_t0, ros::Time t1, ros::Time t0){
   // Angle unwrapping
   double dAngle = Angle::Unwrap_PI(angle_t0, angle_t1);
-  // Timestamp
-  dT = abs(t1.toNsec() - t0.toNsec())/1E9;
- return dAngle / dT;
+  return dAngle / dT;
 }
 
 void encodersLogic(){

@@ -12,5 +12,7 @@ const uint8_t encoder_right_pin = 7;
 
 ros::NodeHandle  nh;
 
+double rate(100.0); // Hz
+
 const double wheel_radius = 3.1 / 1E2;    // 3.1 cm
 const double wheel_distance = 14.6 / 1E2; // 14.6 cm
