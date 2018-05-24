@@ -2,9 +2,6 @@
 #include "encoder.hpp"
 #include "odometry.hpp"
 
-uint32_t lastTime;
-uint16_t period(50);
-
 void setup(){
   encoder_left.begin();
   encoder_right.begin();
@@ -17,9 +14,6 @@ void setup(){
   nh.advertise(encoder_left_pub);
   nh.advertise(encoder_right_pub);
   nh.advertise(odom_pub);
-
-  initial_left_motor_angle = encoder_left.getRotationInRadians();
-  initial_right_motor_angle = encoder_right.getRotationInRadians();
   
   last_time = nh.now();
 
@@ -27,13 +21,13 @@ void setup(){
 }
 
 void loop(){
-  const uint32_t currentTime = millis();
-  if((currentTime - lastTime) >= period)
+  current_time = nh.now();
+  
+  if((current_time.toNsec() - last_time.toNsec())/1E9 >= 1.0/rate)
   {
-    lastTime = currentTime;
     encodersLogic();
     odometry();
+    last_time = current_time;
   }
   nh.spinOnce();
-  delay(1);
 }

@@ -70,7 +70,7 @@ void odometry()
   double v_right = wr * wheel_radius;
   
   // Velocities in the robot frame
-  double v_rx = ( v_right + v_left ) /2.0;
+  double v_rx = ( v_right + v_left ) / 2.0;
   double v_ry = 0; // we have a non-holonomic constraint (for a holonomic robot, this is non-zero)
   double omega_r = ( v_right - v_left ) / wheel_distance; // d denotes the distance between both wheels (track)
 

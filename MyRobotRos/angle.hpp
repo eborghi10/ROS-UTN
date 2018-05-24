@@ -4,16 +4,20 @@ class Angle {
 public:
     Angle(double angle);
     inline double GetAngle();
-    inline double ToRadians();
     inline double ToDegrees();
     inline void NormalizeAngle();
+    inline void NormalizeAnglePositive();
     Angle operator-(Angle angle);
     void operator-=(Angle angle);
     Angle operator+(Angle angle);
     void operator+=(Angle angle);
     void operator=(double angle);
+    bool operator<(double arg);
+    bool operator>(double arg);
+
+    static inline double Unwrap(double limit, Angle previousAngle, Angle newAngle);
+    static inline double Unwrap_PI(Angle previousAngle, Angle newAngle);
 private:
-    inline void NormalizeAnglePositive();
     double angle;
 };
 
@@ -25,11 +29,6 @@ Angle::Angle(double angle)
 inline double Angle::GetAngle() 
 {
     return this->angle;
-}
-
-inline double Angle::ToRadians()
-{
-    return this->angle * PI / 180.0;
 }
 
 inline double Angle::ToDegrees()
@@ -73,3 +72,32 @@ void Angle::operator=(double angle)
   this->angle = angle;
 }
 
+bool Angle::operator<(double arg)
+{
+    return this->angle < arg;
+}
+
+bool Angle::operator>(double arg)
+{
+    return this->angle > arg;
+}
+
+/**
+ * Unwraps the difference between the angles over a discontinous domain.
+ * 
+ * @param limit: When the difference between the angles exceeds the "limit" 
+ *               means that there is a jump over a discontinuity
+ */
+static inline double Angle::Unwrap(double limit, Angle previousAngle, Angle newAngle)
+{
+    // Angle difference
+    double d = newAngle.GetAngle() - previousAngle.GetAngle();
+    // |d| > l : Angle jump -> Invert d
+    // * Invert does not mean to do: d=-d but d+-TWO_PI
+    return d > limit ? d - TWO_PI : (d < -limit ? d + TWO_PI : d);
+}
+
+static inline double Angle::Unwrap_PI(Angle previousAngle, Angle newAngle)
+{
+    return Angle::Unwrap(PI, previousAngle, newAngle);
+}
