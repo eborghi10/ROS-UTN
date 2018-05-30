@@ -2,6 +2,7 @@
 # Import dependencies
 import rospy
 from std_msgs.msg import Float32, Int16
+from robot_control.srv import Vel, VelResponse
 
 class PID:
 # https://syrotek.felk.cvut.cz/course/ROS_CPP_INTRO/exercise/ROS_CPP_PID
@@ -12,18 +13,18 @@ class PID:
     def __init__(self, kP, kI, kD, motor_max_vel=10., target_velocity=0., rate_hz=50., \
         encoder_topic='encoder', motor_topic='output', set_point_topic='set_point', error_topic='error'):
         # PID parameters
-        self.kP = kP
-        self.kI = kI
-        self.kD = kD
-        self.MAX_MOTOR_VEL_M_S = motor_max_vel
-        self.target_velocity = target_velocity
+        self.kP = float(kP)
+        self.kI = float(kI)
+        self.kD = float(kD)
+        self.MAX_MOTOR_VEL_M_S = float(motor_max_vel)
+        self.target_velocity = float(target_velocity)
         # Set publishers and subscribers
-        rospy.init_node('pid_node', anonymous=True)
+        rospy.init_node('pid_node')
         self.rate = rospy.Rate(rate_hz)
         rospy.on_shutdown(self.__on_shutdown_cb__)
 
         rospy.Subscriber(encoder_topic, Float32, self.__encoder_cb__)
-        rospy.Service(set_point_topic, , self.__set_point_srv__)
+        rospy.Service(set_point_topic, Vel, self.set_point_srv)
         self.motor_pub = rospy.Publisher(motor_topic, Int16, queue_size=10, latch=True)
         self.error_pub = rospy.Publisher(error_topic, Float32, queue_size=10, latch=True)
 
@@ -33,11 +34,11 @@ class PID:
         error = self.__get_error__()
         self.error_pub.publish(error)
         return error
-    
+
     def __get_error__(self):
         error = self.target_velocity - self.encoder_msg
         return error
-    
+
     def publish_velocity(self, error_vel):
         motor_vel = self.__to_motor__(error_vel)
         self.motor_pub.publish(motor_vel)
@@ -50,10 +51,10 @@ class PID:
 
     def __encoder_cb__(self, data):
         self.encoder_msg = data.data
-    
-    def __set_point_srv__(self, req):
-        self.target_velocity = req.vel
-        return std_srvs.Empty()
+
+    def set_point_srv(self, req):
+        self.target_velocity = float(req.velocity)
+        return VelResponse(True)
 
     def __on_shutdown_cb__(self):
         rospy.loginfo("Stopping motor")
@@ -64,7 +65,7 @@ class PID:
 
     def __to_motor__(self, rad_s):
         return rad_s * 255. / self.MAX_MOTOR_VEL_M_S
-    
+
     def set_max_motor_vel(self, velocity):
         self.MAX_MOTOR_VEL_M_S = velocity
 
@@ -73,7 +74,7 @@ class PID:
 
 def main():
     MAX_MOTOR_VEL_RPM = 90 # motor maximum velocity (90 rpm)
-    pid = PID(1., 0., 0.)
+    pid = PID(1., 0., 0., encoder_topic='encoder/left', motor_topic='output/left')
     pid.set_max_motor_vel(pid.to_rad_s(MAX_MOTOR_VEL_RPM))
     pid.control_loop()
 

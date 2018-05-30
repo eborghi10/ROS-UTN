@@ -1,2 +1,3 @@
-std_msgs/Float32 vel
+float32 velocity
 ---
+bool response
