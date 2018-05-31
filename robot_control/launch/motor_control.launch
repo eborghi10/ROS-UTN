@@ -1,9 +1,8 @@
 <launch>
     <arg name="port" default="/dev/ttyACM0" />
     <arg name="baud" default="115200" />
-
-    <arg name="rviz" default="false"/>
-    <arg name="rvizconfig" default="$(find robot_control)/rviz/config.rviz" />
+    <arg name="reconfigure" default="true"/>
+    <arg name="rviz" default="true"/>
 
     <!-- Run rosserial node (UPLOAD THE PROGRAM TO YOUR ARDUINO-BASED ROBOT FIRST!) -->
     <include file="$(find robot_control)/launch/serial_node.launch">
@@ -11,8 +10,13 @@
       <arg name="baud" value="$(arg baud)"/>
     </include>
 
-    <!-- Remaps /rosabridge/odom to /odom as nav_msgs/odom -->
-    <include file="$(find rosabridge_server)/launch/odom_proxy_node.launch" />
+    <!-- Launch motor control node -->
+    <node name="pid_node" pkg="robot_control" type="motor_control.py" required="true"/>
+
+    <!-- Change PID parameters dinamically -->
+    <group if="$(arg reconfigure)">
+      <node name="rqt_reconfigure" pkg="rqt_reconfigure" type="rqt_reconfigure" required="false"/>
+    </group>
 
     <!-- Show in Rviz -->
     <group if="$(arg rviz)">
