@@ -22,7 +22,7 @@ void fillOdometryMsg()
   odom_msg.header.frame_id = odom;
   odom_msg.child_frame_id = base_link;
 
-  // CBA Set Odom covariances  
+  // CBA Set Odom covariances
   odom_msg.pose_covariance[0] = 0.0;
   odom_msg.pose_covariance[1] = 0.0;
   odom_msg.pose_covariance[2] = 0.0;
@@ -63,12 +63,12 @@ void PublishOdometry(double vx, double vy, double vyaw)
 /**
  * https://answers.ros.org/question/231942/computing-odometry-from-two-velocities/?answer=231954#post-id-231954
  */
-void odometry()
+void odometry(double dT)
 {
   // Linear velocities of the wheels
   double v_left = wl * wheel_radius;
   double v_right = wr * wheel_radius;
-  
+
   // Velocities in the robot frame
   double v_rx = ( v_right + v_left ) / 2.0;
   double v_ry = 0; // we have a non-holonomic constraint (for a holonomic robot, this is non-zero)
