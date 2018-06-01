@@ -20,7 +20,7 @@
 
     <!-- Show in Rviz -->
     <group if="$(arg rviz)">
-        <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="false"/>
+        <node name="rviz" pkg="rviz" type="rviz" required="false"/>
     </group>
 
 </launch>

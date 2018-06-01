@@ -4,6 +4,7 @@ import math
 import rospy
 from std_msgs.msg import Float32, Int16
 from robot_control.srv import Vel, VelResponse
+from std_srvs.srv import Empty, EmptyResponse
 from dynamic_reconfigure.server import Server
 from robot_control.cfg import PidParametersConfig
 
@@ -13,7 +14,7 @@ class PID:
     '''
     PID class for doing a DC Motor velocity control
     '''
-    def __init__(self, kP, kI, kD, motor_max_vel=10, target_velocity=0, rate_hz=30, i_clamp=10, alpha=1.0 \
+    def __init__(self, kP, kI, kD, motor_max_vel=10, target_velocity=0, rate_hz=30, i_clamp=10, alpha=1.0, \
         encoder_topic='encoder', motor_topic='output', set_point_topic='set_point', error_topic='error'):
         # PID parameters
         self.kP = float(kP)
@@ -37,12 +38,13 @@ class PID:
         Server(PidParametersConfig, self.__update_pid_parameters__)
         self.motor_pub = rospy.Publisher(motor_topic, Int16, queue_size=10, latch=True)
         self.error_pub = rospy.Publisher(error_topic, Float32, queue_size=10, latch=True)
+        rospy.Service('pid/reset', Empty, self.__reset__)
 
         self.encoder_msg = 0.
 
     def __get_velocity__(self):
         error = self.__get_error__()
-        self.error_pub.publish(error)
+        self.error_pub.publish(self.target_velocity + error)
         return error
 
     def __get_error__(self):
@@ -129,8 +131,13 @@ class PID:
         self.kD = 0.
         self.error_sum = 0.
         self.i_clamp = 0.
-        self.previous_time = 0.
+        # self.previous_time = 0.
         self.previous_error = 0.
+
+    def __reset__(self, req):
+        rospy.loginfo("Resetting PID")
+        self.reset()
+        return EmptyResponse()
 
 def main():
     MAX_MOTOR_VEL_RPM = 100. # motor maximum velocity (90 rpm)
