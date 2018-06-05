@@ -43,7 +43,7 @@ void PublishOdometry(double vx, double vy, double vyaw)
   geometry_msgs::Quaternion quat = tf::createQuaternionFromYaw(th);
 
   odom_msg.header.seq++;
-  odom_msg.header.stamp = current_time;
+  odom_msg.header.stamp = nh.now();
   odom_msg.pose.position.x = x;
   odom_msg.pose.position.y = y;
   odom_msg.pose.position.z = 0.0;
