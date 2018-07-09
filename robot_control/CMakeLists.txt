@@ -5,10 +5,13 @@ project(robot_control)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  tf
   rospy
   std_msgs
   message_generation
-	dynamic_reconfigure
+  dynamic_reconfigure
+  actionlib
+  actionlib_msgs
 )
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -34,16 +37,17 @@ add_service_files(
 )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+add_action_files(
+  FILES
+  GoToPose.action
+)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
  DEPENDENCIES
  std_msgs
+ actionlib_msgs
+ geometry_msgs
 )
 
 ################################################
@@ -67,7 +71,7 @@ generate_dynamic_reconfigure_options(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES robot_control
-  CATKIN_DEPENDS rospy message_runtime
+  CATKIN_DEPENDS rospy message_runtime actionlib_msgs
 #  DEPENDS system_lib
 )
 

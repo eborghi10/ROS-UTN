@@ -1,0 +1,74 @@
+#! /usr/bin/env python
+
+import rospy
+from geometry_msgs.msg import Twist
+from std_msgs.msg import Int16
+
+from robot_control import controller
+
+class ControllerNode:
+
+    def __init__(self):
+        self.controller = controller.Controller()
+        self.linearVelocity = 0.0
+        self.angularVelocity = 0.0
+
+    def main(self):
+        self.leftPub = rospy.Publisher('output/left', Int16, queue_size=1)
+        self.rightPub = rospy.Publisher('output/right', Int16, queue_size=1)
+
+        rospy.init_node('diff_drive_controller')
+        self.nodeName = rospy.get_name()
+        rospy.loginfo("{0} started".format(self.nodeName))
+
+        rospy.Subscriber("cmd_vel", Twist, self.twistCallback)
+
+        self.wheelSeparation = float(rospy.get_param('~wheel_separation', default=0.146))
+        self.maxMotorSpeed = int(rospy.get_param('~max_motor_speed', default=10.))
+        self.wheelRadius = float(rospy.get_param('~wheel_radius', default=0.031))
+        self.rate = float(rospy.get_param('~rate', 10.0))
+        self.timeout = float(rospy.get_param('~timeout', 0.2))
+
+        self.controller.setWheelSeparation(self.wheelSeparation)
+        self.controller.setMaxMotorSpeed(self.maxMotorSpeed)
+        self.controller.setWheelRadius(self.wheelRadius)
+
+        self.factor = 25.5
+
+        # Register shutdown hook
+        rospy.on_shutdown(self.__shutdown_cb__)
+
+        rate = rospy.Rate(self.rate)
+        self.lastTwistTime = rospy.get_time()
+        while not rospy.is_shutdown():
+            self.publish()
+            rate.sleep()
+    
+    def __stop_motors__(self):
+        self.leftPub.publish(0)
+        self.rightPub.publish(0)
+
+    def __shutdown_cb__(self):
+        rospy.loginfo("Stopping motors before shutting down")
+        self.__stop_motors__()
+
+    def publish(self):
+        if rospy.get_time() - self.lastTwistTime < self.timeout:
+            speeds = self.controller.getSpeeds(self.linearVelocity,
+                                               self.angularVelocity)
+            self.leftPub.publish(Int16(speeds.left * self.factor))
+            self.rightPub.publish(Int16(speeds.right * self.factor))
+        else:
+            self.__stop_motors__()
+
+    def twistCallback(self, twist):
+        self.linearVelocity = twist.linear.x
+        self.angularVelocity = twist.angular.z
+        self.lastTwistTime = rospy.get_time()
+
+if __name__ == '__main__':
+    try:
+        node = ControllerNode()
+        node.main()
+    except rospy.ROSInterruptException:
+        pass

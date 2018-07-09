@@ -17,11 +17,11 @@ AS5048A encoder_right(encoder_right_pin);
 
 Angle current_left_motor_angle(0);
 Angle current_right_motor_angle(0);
-Angle last_left_motor_angle(0);
-Angle last_right_motor_angle(0);
+// Angle last_left_motor_angle(0);
+// Angle last_right_motor_angle(0);
 
-ros::Publisher encoder_left_vel_pub("encoder/left/velocity", &encoder_left_vel_msg);
-ros::Publisher encoder_right_vel_pub("encoder/right/velocity", &encoder_right_vel_msg);
+// ros::Publisher encoder_left_vel_pub("encoder/left/velocity", &encoder_left_vel_msg);
+// ros::Publisher encoder_right_vel_pub("encoder/right/velocity", &encoder_right_vel_msg);
 ros::Publisher encoder_left_pos_pub("encoder/left/position", &encoder_left_pos_msg);
 ros::Publisher encoder_right_pos_pub("encoder/right/position", &encoder_right_pos_msg);
 
@@ -46,18 +46,19 @@ void encodersLogic(double dT){
   current_right_motor_angle = spline_right.value(raw_angle_right);
   // Publish angles
   encoder_left_pos_msg.data = current_left_motor_angle.GetAngle();
-  encoder_right_pos_msg.data = current_right_motor_angle.GetAngle();
+  // TODO: THERE IS A MINUS SIGN OVER HERE!
+  encoder_right_pos_msg.data = -current_right_motor_angle.GetAngle();
   encoder_left_pos_pub.publish(&encoder_left_pos_msg);
   encoder_right_pos_pub.publish(&encoder_right_pos_msg);
 
-  wl = get_velocity(current_left_motor_angle, last_left_motor_angle, dT);
-  encoder_left_vel_msg.data = wl;
-  encoder_left_vel_pub.publish( &encoder_left_vel_msg );
+//   wl = get_velocity(current_left_motor_angle, last_left_motor_angle, dT);
+//   encoder_left_vel_msg.data = wl;
+//   encoder_left_vel_pub.publish( &encoder_left_vel_msg );
 
-  wr = (-1) * get_velocity(current_right_motor_angle, last_right_motor_angle, dT);
-  encoder_right_vel_msg.data = wr;
-  encoder_right_vel_pub.publish( &encoder_right_vel_msg );
+//   wr = (-1) * get_velocity(current_right_motor_angle, last_right_motor_angle, dT);
+//   encoder_right_vel_msg.data = wr;
+//   encoder_right_vel_pub.publish( &encoder_right_vel_msg );
 
-  last_right_motor_angle = current_right_motor_angle;
-  last_left_motor_angle = current_left_motor_angle;
+//   last_right_motor_angle = current_right_motor_angle;
+//   last_left_motor_angle = current_left_motor_angle;
 }

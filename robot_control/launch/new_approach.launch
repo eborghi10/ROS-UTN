@@ -1,0 +1,43 @@
+<launch>
+    <arg name="port" default="/dev/ttyACM0" />
+    <arg name="baud" default="115200" />
+    <arg name="rviz" default="true"/>
+    <arg name="rvizconfig" default="$(find robot_control)/rviz/config.rviz" />
+
+    <!-- Run rosserial node (UPLOAD THE PROGRAM TO YOUR ARDUINO-BASED ROBOT FIRST!) -->
+    <include file="$(find robot_control)/launch/serial_node.launch">
+      <arg name="port" value="$(arg port)"/>
+      <arg name="baud" value="$(arg baud)"/>
+    </include>
+
+    <node name="new_approach" pkg="robot_control" type="new_approach.py" required="true"/>
+
+    <!-- <node name="rqt_plot_wrapped" pkg="rqt_plot" type="rqt_plot" args="/encoder/left/position /encoder/right/position" required="false"/> -->
+    <!-- <node name="rqt_plot_unwrapped" pkg="rqt_plot" type="rqt_plot" args="/encoder/left/position_unwrapped /encoder/right/position_unwrapped" required="false"/> -->
+    
+    <node name="go_to_goal" pkg="robot_control" type="go_to_goal.py">
+        <param name="~rate" value="20" />
+        <param name="~kP" value="0.5" />
+        <param name="~kA" value="1.0" />
+        <param name="~kB" value="-0.8" />
+        <param name="~max_linear_speed" value="0.2" />
+        <param name="~min_linear_speed" value="0.05" />
+        <param name="~max_angular_speed" value="0.7" />
+        <param name="~min_angular_speed" value="0.1" />
+        <param name="~linear_tolerance" value="0.01" />
+        <param name="~angular_tolerance" value="0.04" />
+        <param name="~forwardMovementOnly" value="false" />
+    </node>
+
+    <node name="controller" pkg="robot_control" type="diff_drive_controller"
+            output="screen">
+        <rosparam subst_value="true">
+        timeout: 1.0
+        </rosparam>
+    </node>
+
+    <!-- Show in Rviz -->
+    <group if="$(arg rviz)">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="false"/>
+    </group>
+</launch>
