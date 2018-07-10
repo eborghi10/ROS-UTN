@@ -1,3 +1,7 @@
+/**
+ * Tests a DC motor velocity through the serial port
+ */
+
 #include <DCMotor.h>
 
 // #define RIGHT_WHEEL 1

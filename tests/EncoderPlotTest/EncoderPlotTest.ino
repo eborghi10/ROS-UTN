@@ -1,6 +1,8 @@
 #include <AS5048A.h>
 
 /**
+ * Tests the AS5048A encoder
+ * 
  * Tools > Serial Plotter
  */
 

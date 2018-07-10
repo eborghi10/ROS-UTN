@@ -1,3 +1,7 @@
+/**
+ * Tests the ultrasonic sensor using ROS
+ */
+
 #include <Ping.h>
 
 #include <ros.h>
@@ -16,7 +20,6 @@ void setup()
   nh.initNode();
   nh.advertise(ping_pub);
 }
-
 
 void loop()
 {

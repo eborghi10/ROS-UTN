@@ -1,5 +1,9 @@
+/**
+ * Tests a DC motor using a PWM signal
+ */
+
 #include <ros.h>
-#include <std_msgs/UInt16.h> // Usar geometry_msgs/Twist
+#include <std_msgs/UInt16.h>
 
 #include <DCMotor.h>
 
@@ -15,7 +19,6 @@ void servo_cb( const std_msgs::UInt16& cmd_msg){
   dcMotor.setSpeed(cmd_msg.data); //set servo angle, should be from 0-180  
   digitalWrite(13, HIGH-digitalRead(13));  //toggle led  
 }
-
 
 ros::Subscriber<std_msgs::UInt16> sub("servo", servo_cb);
 

@@ -17,5 +17,5 @@ void dcmotor_right_cb(const std_msgs::Int16& cmd_msg){
     dcMotorRight.setSpeed(cmd_msg.data);
 }
 
-ros::Subscriber<std_msgs::Int16> subMotorLeft("output/left", dcmotor_left_cb);
-ros::Subscriber<std_msgs::Int16> subMotorRight("output/right", dcmotor_right_cb);
+ros::Subscriber<std_msgs::Int16> subMotorLeft(LEFT_MOTOR_TOPIC, dcmotor_left_cb);
+ros::Subscriber<std_msgs::Int16> subMotorRight(RIGHT_MOTOR_TOPIC, dcmotor_right_cb);

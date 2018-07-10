@@ -14,6 +14,6 @@ $ catkin_make
 
 ### Ejecución
 
-Para correr estos programas, ejecutar cada uno de los siguientes comandos en una terminal por separado:
+Para correr una demo:
 
-1. `roslaunch robot_control serial_node.launch`
+1. `roslaunch robot_control arduino_robot.launch`

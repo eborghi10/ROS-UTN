@@ -2,6 +2,8 @@
 #include <spline.h>
 
 /**
+ * Tests the Spline library and the AS5048A encoder
+ * 
  * Tools > Serial Plotter
  */
 

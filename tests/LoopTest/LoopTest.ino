@@ -1,3 +1,7 @@
+/**
+ * Tests a constant loop with Arduino & ROS
+ */
+
 #include <ros.h>
 #include <std_msgs/Float32.h>
 

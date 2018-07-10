@@ -1,3 +1,7 @@
+/**
+ * Tests the CNY70 encoders using Arduino's Serial Plot
+ */
+
 const int PIN = A2;
 
 uint16_t oldState;
