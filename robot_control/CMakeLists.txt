@@ -7,6 +7,7 @@ project(robot_control)
 find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
+	geometry_msgs
   message_generation
   actionlib
   actionlib_msgs
