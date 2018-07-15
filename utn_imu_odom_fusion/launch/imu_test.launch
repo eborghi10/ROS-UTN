@@ -1,0 +1,40 @@
+<launch>
+    <arg name="port" default="/dev/ttyACM0" />
+    <arg name="baud" default="115200" />
+    <arg name="rviz" default="true"/>
+    <arg name="rvizconfig" default="$(find utn_imu_odom_fusion)/rviz/config.rviz" />
+
+    <!-- Static transform /map -> /odom -->
+    <!-- <node pkg="tf" type="static_transform_publisher" name="static_imu_tf" args="0 0 0 0 0 0 1 map base_imu_link 100" /> -->
+    <node name="imu_tf" pkg="utn_imu_odom_fusion" type="imu_tf" required="true"/>
+
+    <!-- Run rosserial node (UPLOAD THE PROGRAM TO YOUR ARDUINO-BASED ROBOT FIRST!) -->
+    <include file="$(find robot_control)/launch/serial_node.launch">
+      <arg name="port" value="$(arg port)"/>
+      <arg name="baud" value="$(arg baud)"/>
+    </include>
+
+    <!-- rosabridge server : IMU proxy -->
+    <!-- TODO: remap using parameter? -->
+    <node pkg="rosabridge_server" type="imu_proxy_node" name="imu_proxy_node" output="screen">
+        <param name="imu_frame" value="imu_link" />
+    </node>
+
+    <!-- Fuse sensor sources -->
+    <!-- http://wiki.ros.org/robot_pose_ekf -->
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+        <param name="output_frame" value="odom"/>
+        <param name="freq" value="30.0"/>
+        <param name="sensor_timeout" value="1.0"/>
+        <param name="odom_used" value="true"/>
+        <param name="imu_used" value="true"/>
+        <param name="vo_used" value="false"/>
+        <param name="debug" value="false"/>
+        <param name="self_diagnose" value="false"/>
+    </node>
+
+    <!-- Show in Rviz -->
+    <group if="$(arg rviz)">
+        <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="false"/>
+    </group>
+</launch>
