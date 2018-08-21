@@ -19,23 +19,24 @@
     <!-- TODO: remap using parameter? -->
     <node pkg="rosabridge_server" type="imu_proxy_node" name="imu_proxy_node" output="screen">
         <param name="imu_frame" value="imu_link" />
+        <remap from="imu/data" to="imu_data"/>
     </node>
 
     <!-- Fuse sensor sources -->
     <!-- http://wiki.ros.org/robot_pose_ekf -->
-    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
-        <param name="output_frame" value="odom"/>
-        <param name="freq" value="30.0"/>
-        <param name="sensor_timeout" value="1.0"/>
-        <param name="odom_used" value="true"/>
-        <param name="imu_used" value="true"/>
-        <param name="vo_used" value="false"/>
-        <param name="debug" value="false"/>
-        <param name="self_diagnose" value="false"/>
-    </node>
+    <!-- <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+        <rosparam command="load" file="$(arg utn_imu_odom_fusion)/config/robot_pose_ekf.yaml"/>
+    </node> -->
+    <!-- http://wiki.ros.org/robot_localization -->
+    <!-- <node pkg="robot_localization" type="ekf_localization_node" name="ekf_localization">
+      <rosparam command="load" file="$(arg utn_imu_odom_fusion)/config/robot_localization_ekf.yaml"/>
+    </node> -->
 
     <!-- Show in Rviz -->
     <group if="$(arg rviz)">
         <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="false"/>
+
+        <param name="robot_description" command="$(find xacro)/xacro --inorder $(find my_robot_description)/urdf/my_robot.xacro"/>
+        <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
     </group>
 </launch>
