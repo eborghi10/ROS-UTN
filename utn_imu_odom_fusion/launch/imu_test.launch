@@ -1,6 +1,5 @@
 <launch>
     <arg name="port" default="/dev/ttyACM0" />
-    <arg name="baud" default="115200" />
     <arg name="rviz" default="true"/>
     <arg name="rvizconfig" default="$(find utn_imu_odom_fusion)/rviz/config.rviz" />
 
@@ -8,10 +7,12 @@
     <!-- <node pkg="tf" type="static_transform_publisher" name="static_imu_tf" args="0 0 0 0 0 0 1 map base_imu_link 100" /> -->
     <node name="imu_tf" pkg="utn_imu_odom_fusion" type="imu_tf" required="true"/>
 
+    <!-- Odometry node -->
+    <node name="odometry" pkg="robot_control" type="odometry.py" required="true"/>
+
     <!-- Run rosserial node (UPLOAD THE PROGRAM TO YOUR ARDUINO-BASED ROBOT FIRST!) -->
     <include file="$(find robot_control)/launch/serial_node.launch">
       <arg name="port" value="$(arg port)"/>
-      <arg name="baud" value="$(arg baud)"/>
     </include>
 
     <!-- rosabridge server : IMU proxy -->

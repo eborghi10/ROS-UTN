@@ -1,8 +1,8 @@
 <launch>
     <arg name="port" default="/dev/ttyACM0" />
-    <arg name="baud" default="115200" />
+    <arg name="baud" value="57600" />
 
     <!-- Run rosserial node (UPLOAD THE PROGRAM TO YOUR ARDUINO-BASED ROBOT FIRST!) -->
-    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" args="_port:=$(arg port) baud:=$(arg baud)"/>
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_node" args="_port:=$(arg port) _baud:=$(arg baud)"/>
 
 </launch>
