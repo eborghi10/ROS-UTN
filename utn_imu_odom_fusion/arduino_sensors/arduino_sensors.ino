@@ -7,7 +7,6 @@ Encoder *encoders;
 IMUSensor *imu_sensor;
 
 void setup() {
-    // nh.getHardware()->setBaud(115200);
     nh.initNode();
     encoders = new Encoder(&nh);
     imu_sensor = new IMUSensor(&nh);

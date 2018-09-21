@@ -66,7 +66,7 @@ Visualization Manager:
         All Enabled: true
         base_footprint:
           Value: true
-        base_link:
+        base_footprint:
           Value: true
         camera_link:
           Value: true
@@ -84,7 +84,7 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_link:
+        base_footprint:
           imu_link:
             {}
       Update Interval: 0
@@ -143,7 +143,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_link
+    Fixed Frame: base_footprint
     Frame Rate: 30
   Name: root
   Tools:

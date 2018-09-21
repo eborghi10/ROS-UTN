@@ -5,7 +5,7 @@
 
     <!-- Static transform /map -> /odom -->
     <!-- <node pkg="tf" type="static_transform_publisher" name="static_imu_tf" args="0 0 0 0 0 0 1 map base_imu_link 100" /> -->
-    <node name="imu_tf" pkg="utn_imu_odom_fusion" type="imu_tf" required="true"/>
+    <node name="tf" pkg="utn_imu_odom_fusion" type="tf" required="true"/>
 
     <!-- Odometry node -->
     <node name="odometry" pkg="robot_control" type="odometry.py" required="true"/>
