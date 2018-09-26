@@ -75,8 +75,8 @@ public:
     // Constructors
     IMUSensor();
     IMUSensor(uint8_t);
-    IMUSensor(char*);
-    IMUSensor(uint8_t, char*);
+    IMUSensor(const char*);
+    IMUSensor(uint8_t, const char*);
     // Public method
     void publish();
 };
@@ -87,10 +87,10 @@ IMUSensor::IMUSensor()
 IMUSensor::IMUSensor(uint8_t interruptPin)
 : IMUSensor(interruptPin, TOPIC_NAME) {}
 
-IMUSensor::IMUSensor(char* topicName)
+IMUSensor::IMUSensor(const char* topicName)
 : IMUSensor(INT_PIN, topicName) {}
 
-IMUSensor::IMUSensor(uint8_t interruptPin, char* topicName)
+IMUSensor::IMUSensor(uint8_t interruptPin, const char* topicName)
 : interruptPin(interruptPin)
 , mpuInterrupt(false)
 , dmpReady(false)
@@ -107,7 +107,7 @@ IMUSensor::IMUSensor(uint8_t interruptPin, char* topicName)
 /**
  * INTERRUPT DETECTION ROUTINE
  */
-static void IMUSensor::dmpDataReady() {
+void IMUSensor::dmpDataReady() {
     imuSensor->isr();
 }
 void IMUSensor::isr() {
@@ -116,7 +116,7 @@ void IMUSensor::isr() {
 
 void IMUSensor::generateIMUMessage() {
     msg.header.seq = 0;
-    // msg.header.frame_id = base_imu_link;
+    msg.header.frame_id = base_imu_link;
     msg.header.frame_id = IMU_TF_LINK;
 
     // CBA Set IMU covariances

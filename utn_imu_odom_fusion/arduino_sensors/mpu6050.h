@@ -93,7 +93,7 @@ IMUSensor::IMUSensor(ros::NodeHandle* nh_)
 /**
  * INTERRUPT DETECTION ROUTINE
  */
-static void IMUSensor::dmpDataReady() {
+void IMUSensor::dmpDataReady() {
     imuSensor->isr();
 }
 void IMUSensor::isr() {
@@ -102,7 +102,7 @@ void IMUSensor::isr() {
 
 void IMUSensor::generateIMUMessage() {
     msg.header.seq = 0;
-    // msg.header.frame_id = base_imu_link;
+    msg.header.frame_id = base_imu_link;
     msg.header.frame_id = IMU_TF_LINK;
 
     // CBA Set IMU covariances
